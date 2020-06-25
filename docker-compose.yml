@@ -1,0 +1,26 @@
+version: '2.1'
+
+services:
+  propellerhead:
+    image: propellerhead
+    build: .
+    environment:
+      NODE_ENV: development
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_URL: mysqlDB
+    ports:
+      - 4000:4000
+    links:
+      - mysqlDB 
+    command: ["./wait-for-it.sh", "mysqlDB:3306", "--", "node", "index.js"]
+  mysqlDB:
+  ## since latest mysql community client do not support mysql 8 yet, using 5.7
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    command: 
+      --disable-partition-engine-check
